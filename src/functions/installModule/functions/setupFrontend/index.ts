@@ -6,6 +6,8 @@ import copyToAppsFolder from "./functions/copyToAppsFolder";
 import promptCategorySelection from "./functions/promptCategorySelection";
 import configRoutesFile from "./functions/configRoutesFile";
 import { t } from "../../../../core/api";
+import prompts from "prompts";
+import { pressAnyKeyToContinue } from "../../../../core/cli/utils";
 
 /**
  * Sets up the frontend by copying the module to the apps folder and configuring the routes file.
@@ -45,6 +47,5 @@ export default async function setupFrontend(
   );
 
   success(t("messages.frontendInstallationSuccess") + manifest.name);
-
-  await wait(2000);
+  await pressAnyKeyToContinue();
 }

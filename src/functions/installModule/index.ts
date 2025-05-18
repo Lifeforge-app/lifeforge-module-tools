@@ -7,8 +7,12 @@ import fs from "fs";
 import { t } from "../../core/api";
 import setupFrontend from "./functions/setupFrontend";
 import confirmManifest from "./functions/confirmManifest";
+import setupBackend from "./functions/setupBackend";
 
-export default async function installModule() {
+export default async function installModule(
+  apiHost: string,
+  sessionToken: string
+) {
   const targetZip = await selectFromFS(t("prompts.selectModuleZip"), "zip");
 
   if (!targetZip) {
@@ -47,6 +51,14 @@ export default async function installModule() {
 
   try {
     await setupFrontend(frontendPath, manifest);
+  } catch (e) {
+    error((e as Error).message);
+    await wait(3000);
+    return;
+  }
+
+  try {
+    await setupBackend(manifest, apiHost, sessionToken);
   } catch (e) {
     error((e as Error).message);
     await wait(3000);

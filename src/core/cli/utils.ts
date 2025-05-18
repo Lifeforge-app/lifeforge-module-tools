@@ -1,3 +1,5 @@
+import chalk from "chalk";
+import { t } from "../api";
 import { wait } from "./wait";
 
 /**
@@ -10,4 +12,16 @@ export const exitProcess = async (code: number) => {
   await wait(1000);
   console.clear();
   process.exit(code);
+};
+
+export const pressAnyKeyToContinue = async () => {
+  console.log(chalk.yellow(t("messages.pressAnyKeyToContinue")));
+
+  await new Promise((resolve) => {
+    process.stdin.setRawMode(true);
+    process.stdin.resume();
+    process.stdin.on("data", () => {
+      resolve(true);
+    });
+  });
 };

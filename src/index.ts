@@ -52,7 +52,7 @@ while (true) {
 
   switch (command) {
     case "install-module":
-      await installModule();
+      await installModule(credentials.apiHost, credentials.sessionToken);
       break;
     case "exit":
       error(t("messages.exit"));
