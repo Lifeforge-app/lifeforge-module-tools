@@ -5,7 +5,15 @@ import { t } from "../../../core/api";
 import chalk from "chalk";
 import { error, wait } from "../../../core/cli";
 
-export default async function PathSelector(
+/**
+ * Function to select a path (zip file or folder) from the filesystem.
+ * It allows the user to navigate through directories and select a file or folder.
+ *
+ * @param message - The message to display to the user.
+ * @param type - The type of selection: "zip" for zip files or "folder" for folders.
+ * @returns The selected path as a string or null if the operation was cancelled.
+ */
+export default async function selectPath(
   message: string,
   type: "zip" | "folder"
 ): Promise<string | null> {

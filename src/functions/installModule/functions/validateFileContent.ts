@@ -2,6 +2,15 @@ import type JSZip from "jszip";
 import ora from "ora";
 import { t } from "../../../core/api";
 
+/**
+ * Validates the content of a JSZip object to ensure it contains the required files and folders.
+ * It checks for the presence of specific files and folders at the top level of the zip content,
+ * check if there is any invalid file or folder,
+ * as well as validating the contents of the manifest.json file.
+ *
+ * @param zipContent - The JSZip object containing the zip content to be validated.
+ * @returns A promise that resolves to true if the validation is successful, false otherwise.
+ */
 export default async function validateFileContent(
   zipContent: JSZip
 ): Promise<boolean> {
@@ -88,6 +97,17 @@ export default async function validateFileContent(
         );
         return false;
       }
+    }
+
+    // Check if the name contains only alphanumeric characters and is PascalCase
+    if (
+      !manifest.name.match(/^[a-zA-Z0-9]+$/) ||
+      !/^[A-Z][a-zA-Z0-9]*$/.test(manifest.name)
+    ) {
+      spinner.fail(
+        `Invalid name in manifest.json: ${manifest.name}. Only alphanumeric characters are allowed and it must be in PascalCase.`
+      );
+      return false;
     }
   } catch {
     spinner.fail("Invalid manifest.json file");

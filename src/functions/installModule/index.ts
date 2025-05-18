@@ -1,4 +1,4 @@
-import selectFromFS from "./functions/getZipPath";
+import selectFromFS from "./functions/selectPath";
 import { error, wait } from "../../core/cli";
 import unzipFile from "./functions/unzipFile";
 import JSZip from "jszip";
@@ -6,6 +6,7 @@ import validateFileContent from "./functions/validateFileContent";
 import fs from "fs";
 import { t } from "../../core/api";
 import setupFrontend from "./functions/setupFrontend";
+import confirmManifest from "./functions/confirmManifest";
 
 export default async function installModule() {
   const targetZip = await selectFromFS(t("prompts.selectModuleZip"), "zip");
@@ -28,6 +29,13 @@ export default async function installModule() {
   await unzipFile(zipContent);
   await wait(1000);
 
+  const manifest = await confirmManifest();
+
+  if (!manifest) {
+    await wait(1000);
+    return;
+  }
+
   const frontendPath = await selectFromFS(
     t("prompts.selectFrontendFolder"),
     "folder"
@@ -38,7 +46,7 @@ export default async function installModule() {
   }
 
   try {
-    await setupFrontend(frontendPath);
+    await setupFrontend(frontendPath, manifest);
   } catch (e) {
     error((e as Error).message);
     await wait(3000);

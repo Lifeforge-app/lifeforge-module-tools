@@ -5,6 +5,15 @@ import { DATA_PATH } from "../../../core/auth/constants/constant";
 import ora from "ora";
 import { t } from "../../../core/api";
 
+/**
+ * Unzips the provided JSZip content into a specified directory.
+ * If the directory already exists, it will be removed before unzipping.
+ * Each file in the zip content is written to the output directory, maintaining the original structure.
+ *
+ * @param zipContent - The JSZip object containing the zip content to be unzipped.
+ * @returns A promise that resolves when the unzipping is complete.
+ * @throws An error if the unzipping process fails.
+ */
 export default async function unzipFile(zipContent: JSZip): Promise<void> {
   const spinner = ora(t("messages.unzippingFile")).start();
 
