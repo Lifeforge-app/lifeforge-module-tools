@@ -67,6 +67,6 @@ export async function logout(): Promise<void> {
     await exitProcess(1);
   }
 
-  spinner.succeed(t("prompts.logoutSuccess"));
+  spinner.succeed(t("messages.logoutSuccess"));
   await exitProcess(0);
 }
