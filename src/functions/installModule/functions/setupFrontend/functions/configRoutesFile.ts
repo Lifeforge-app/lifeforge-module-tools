@@ -1,5 +1,4 @@
 import ora from "ora";
-import findMatchingBrackets from "../../../utils/findMatchingBrackets";
 import fs from "fs";
 import { t } from "../../../../../core/api";
 
@@ -17,41 +16,22 @@ export default async function configRoutesFile(
   routesFile: string,
   moduleName: string,
   targetCategory: string,
-  routesContent: string
+  routesContent: { title: string; items: any[] }[]
 ) {
-  const targetCategoryIndex = new RegExp(
-    `{\\s+title:\\s*?['"]` + targetCategory + `['"]`
-  ).exec(routesContent)?.index;
-
-  if (targetCategoryIndex === undefined) {
-    throw new Error(
-      `Target category "${targetCategory}" not found in routes file. Please ensure the category exists.`
-    );
-  }
-
-  const startBracketIndex = routesContent.indexOf("[", targetCategoryIndex);
-  const endBraceIndex = findMatchingBrackets(routesContent, startBracketIndex);
-
-  if (endBraceIndex === -1) {
-    throw new Error("No matching bracket found in routes file.");
-  }
-
   const configRouteSpinner = ora(t("messages.configuringRoutes")).start();
 
   try {
-    const moduleList = routesContent
-      .slice(startBracketIndex, endBraceIndex + 1)
-      .trim();
+    const targetItem = routesContent.find((e) => e.title === targetCategory);
+    if (!targetItem) {
+      throw new Error(`Target category not found in ${routesFile}`);
+    }
 
-    const newModuleList =
-      moduleList.slice(0, -1).replace(/,$/, "") +
-      `, \n      (await import("@apps/${moduleName}/config")).default\n]`;
-
-    const updatedRoutesContent = routesContent.replace(
-      moduleList,
-      newModuleList
+    targetItem.items.push(`@apps/${moduleName}`);
+    fs.writeFileSync(
+      routesFile,
+      JSON.stringify(routesContent, null, 2),
+      "utf-8"
     );
-    fs.writeFileSync(routesFile, updatedRoutesContent, "utf-8");
 
     configRouteSpinner.succeed(t("messages.configRoutesSuccess"));
   } catch (error) {

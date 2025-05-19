@@ -21,7 +21,11 @@ export default async function setupFrontend(
   manifest: Manifest
 ) {
   const appFolder = path.resolve(frontendPath, "src", "apps");
-  const routesFile = path.resolve(frontendPath, "src/core", "Routes.tsx");
+  const routesFile = path.resolve(
+    frontendPath,
+    "src/core/routes",
+    "routes.json"
+  );
 
   if (!fs.existsSync(appFolder)) {
     throw new Error(
@@ -35,8 +39,15 @@ export default async function setupFrontend(
     );
   }
 
-  const routesContent = fs.readFileSync(routesFile, "utf-8");
-  const targetCategory = await promptCategorySelection(routesContent);
+  const routesContent = JSON.parse(fs.readFileSync(routesFile, "utf-8")) as {
+    title: string;
+    items: any[];
+  }[];
+  const categories = routesContent
+    .map((e) => e.title)
+    .filter(Boolean)
+    .sort();
+  const targetCategory = await promptCategorySelection(categories);
 
   await copyToAppsFolder(appFolder, manifest.name);
   await configRoutesFile(

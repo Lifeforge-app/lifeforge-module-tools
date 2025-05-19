@@ -65,16 +65,16 @@ export const printMenu = () => {
   );
   console.log(
     boxen(
-      `${chalk.bold.yellow(
-        `- ${t("menu.title")} -`.padStart(34, " ").padEnd(34, " ")
-      )}\n\n${Object.entries(COMMANDS)
+      `${chalk.bold.underline.yellow(`${t("menu.title")}`)}\n\n${Object.entries(
+        COMMANDS
+      )
         .map(([category, commands]) => {
-          return `${chalk.bold.white(
+          return `${chalk.bold.underline.white(
             t(`menu.commandCategories.${category}`)
           )}\n${commands
             .map(
               (command) =>
-                `${chalk.bold[command === "exit" ? "red" : "green"](
+                `${chalk[command === "exit" ? "red" : "green"](
                   command.padEnd(longestCommandLength + 2)
                 )}:  ${t(`menu.commandDescription.${_.camelCase(command)}`)}`
             )

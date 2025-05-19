@@ -10,18 +10,8 @@ import { t } from "../../../../../core/api";
  * @throws An error if the operation is cancelled by the user.
  */
 export default async function promptCategorySelection(
-  routesContent: string
+  categories: string[]
 ): Promise<string> {
-  const eachLines = routesContent.split("\n").map((line) => line.trim());
-  const categories = eachLines
-    .filter((line) => line.startsWith("title:"))
-    .map((line) => {
-      const match = line.match(/title:\s*['"](.*?)['"]/);
-      return match ? match[1] : null;
-    })
-    .filter(Boolean)
-    .sort() as string[];
-
   let cancelled = false;
 
   const { targetCategory } = await prompts(

@@ -63,6 +63,6 @@ while (true) {
       break;
     default:
       error(t("messages.notImplemented"));
-      await exitProcess(1);
+      await wait(1000);
   }
 }
