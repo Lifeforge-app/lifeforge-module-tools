@@ -2,6 +2,16 @@ import axios from "axios";
 import { t } from "../../../../../core/api";
 import ora from "ora";
 
+/**
+ * Uploads a zipped module buffer to the backend.
+ *
+ * @param zippedBuffer - The buffer containing the zipped module.
+ * @param moduleName - The name of the module to be uploaded.
+ * @param apiHost - The API host URL.
+ * @param sessionToken - The session token for authentication.
+ * @returns A promise that resolves when the upload is successful.
+ * @throws An error if the upload fails.
+ */
 export default async function uploadToBackend(
   zippedBuffer: Buffer,
   moduleName: string,

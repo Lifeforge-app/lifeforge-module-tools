@@ -1,4 +1,4 @@
-import selectFromFS from "./functions/selectPath";
+import selectFromFS from "../../core/utils/selectFromFS";
 import { error, wait } from "../../core/cli";
 import unzipFile from "./functions/unzipFile";
 import JSZip from "jszip";
@@ -8,60 +8,54 @@ import { t } from "../../core/api";
 import setupFrontend from "./functions/setupFrontend";
 import confirmManifest from "./functions/confirmManifest";
 import setupBackend from "./functions/setupBackend";
+import { getProps } from "../../core/data/propsManager";
 
+/**
+ * Entry point for installing a module from a ZIP file.
+ *
+ * @param apiHost - The API host URL.
+ * @param sessionToken - The session token for authentication.
+ */
 export default async function installModule(
   apiHost: string,
   sessionToken: string
-) {
-  const targetZip = await selectFromFS(t("prompts.selectModuleZip"), "zip");
+): Promise<void> {
+  try {
+    const targetZip = await selectFromFS(t("prompts.selectModuleZip"), "zip");
 
-  if (!targetZip) {
-    return;
-  }
+    console.clear();
 
-  console.clear();
+    const jszip = JSZip();
+    const fileContent = fs.readFileSync(targetZip);
+    const zipContent = await jszip.loadAsync(fileContent);
 
-  const jszip = JSZip();
-  const fileContent = fs.readFileSync(targetZip);
-  const zipContent = await jszip.loadAsync(fileContent);
+    if (!(await validateFileContent(zipContent))) {
+      await wait(2000);
+      return;
+    }
 
-  if (!(await validateFileContent(zipContent))) {
-    await wait(3000);
-    return;
-  }
-
-  await unzipFile(zipContent);
-  await wait(1000);
-
-  const manifest = await confirmManifest();
-
-  if (!manifest) {
+    await unzipFile(zipContent);
     await wait(1000);
-    return;
-  }
 
-  const frontendPath = await selectFromFS(
-    t("prompts.selectFrontendFolder"),
-    "folder"
-  );
+    const manifest = await confirmManifest();
 
-  if (!frontendPath) {
-    return;
-  }
+    if (!manifest) {
+      await wait(1000);
+      return;
+    }
 
-  try {
+    const frontendPath = await getProps<string>("frontendPath");
+    if (!frontendPath) {
+      throw new Error(
+        "Frontend path not found. Please ensure you have set the frontend path correctly."
+      );
+    }
+
     await setupFrontend(frontendPath, manifest);
-  } catch (e) {
-    error((e as Error).message);
-    await wait(3000);
-    return;
-  }
-
-  try {
     await setupBackend(manifest, apiHost, sessionToken);
   } catch (e) {
     error((e as Error).message);
-    await wait(3000);
+    await wait(2000);
     return;
   }
 }

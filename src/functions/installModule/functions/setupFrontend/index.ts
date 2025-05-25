@@ -1,13 +1,13 @@
 import path from "path";
 import fs from "fs";
-import { success, wait } from "../../../../core/cli";
-import type { Manifest } from "../../typescript/manifest.type";
+import { success } from "../../../../core/cli";
+import type { Manifest } from "../../../../core/typescript/manifest.type";
 import copyToAppsFolder from "./functions/copyToAppsFolder";
-import promptCategorySelection from "./functions/promptCategorySelection";
+import promptSelection from "../../../../core/utils/promptCategorySelection";
 import configRoutesFile from "./functions/configRoutesFile";
 import { t } from "../../../../core/api";
-import prompts from "prompts";
 import { pressAnyKeyToContinue } from "../../../../core/cli/utils";
+import getRoutes from "../../../../core/utils/getRoutes";
 
 /**
  * Sets up the frontend by copying the module to the apps folder and configuring the routes file.
@@ -21,11 +21,6 @@ export default async function setupFrontend(
   manifest: Manifest
 ) {
   const appFolder = path.resolve(frontendPath, "src", "apps");
-  const routesFile = path.resolve(
-    frontendPath,
-    "src/core/routes",
-    "routes.json"
-  );
 
   if (!fs.existsSync(appFolder)) {
     throw new Error(
@@ -33,30 +28,25 @@ export default async function setupFrontend(
     );
   }
 
-  if (!fs.existsSync(routesFile)) {
-    throw new Error(
-      `Routes file not found at ${routesFile}. Please ensure the file exists.`
-    );
-  }
+  const [routesPath, routesContent] = getRoutes(frontendPath);
 
-  const routesContent = JSON.parse(fs.readFileSync(routesFile, "utf-8")) as {
-    title: string;
-    items: any[];
-  }[];
   const categories = routesContent
     .map((e) => e.title)
     .filter(Boolean)
     .sort();
-  const targetCategory = await promptCategorySelection(categories);
+  const targetCategory = await promptSelection(
+    t("prompts.selectCategory"),
+    categories
+  );
 
-  await copyToAppsFolder(appFolder, manifest.name);
   await configRoutesFile(
-    routesFile,
+    routesPath,
     manifest.name,
     targetCategory,
     routesContent
   );
+  await copyToAppsFolder(appFolder, manifest.name);
 
-  success(t("messages.frontendInstallationSuccess") + manifest.name);
+  success(`${t("messages.frontendInstallationSuccess")} ${manifest.name}`);
   await pressAnyKeyToContinue();
 }

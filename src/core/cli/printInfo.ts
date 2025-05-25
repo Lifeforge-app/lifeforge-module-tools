@@ -54,6 +54,31 @@ ${`
 };
 
 /**
+ * Prints the frontend folder path in a stylized box.
+ * @param frontendFolder - The path to the frontend folder.
+ */
+export const printFrontendFolder = (frontendFolder: string) => {
+  console.log(
+    boxen(
+      `${t("menu.frontendFolderPath")}:\n${chalk.magenta(frontendFolder)}`,
+      {
+        padding: 1,
+        dimBorder: true,
+        margin: {
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: 0,
+        },
+        width: 72,
+        textAlignment: "left",
+        borderStyle: "round",
+      }
+    )
+  );
+};
+
+/**
  * Prints the menu of the CLI application.
  * It includes the available commands and their descriptions.
  */

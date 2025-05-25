@@ -1,29 +1,21 @@
-import path from "path";
-import fs from "fs";
-import { DATA_PATH } from "../../../core/auth/constants/constant";
-import prompts from "prompts";
-import { error } from "../../../core/cli";
-import { t } from "../../../core/api";
 import { table } from "table";
-import chalk from "chalk";
 import type { Manifest } from "../../../core/typescript/manifest.type";
+import chalk from "chalk";
+import { t } from "../../../core/api";
+import prompts from "prompts";
 
 /**
  * Prompts the user to confirm the manifest details before proceeding with module installation.
  * Displays the manifest information in a table format and asks for confirmation.
+ * Throws an error if the user does not confirm.
  *
- * @returns the manifest if confirmed, otherwise void.
- * @throws An error if the manifest file is not found.
+ * @param manifest - The manifest object containing module information.
+ * @returns Resolves if the user confirms, otherwise throws an error.
+ * @throws An error if the user cancels the operation.
  */
-export default async function confirmManifest(): Promise<Manifest | void> {
-  const manifestPath = path.resolve(DATA_PATH, "unzipped", "manifest.json");
-  if (!fs.existsSync(manifestPath)) {
-    throw new Error("Manifest file not found");
-  }
-
-  const manifestContent = fs.readFileSync(manifestPath, "utf-8");
-  const manifest = JSON.parse(manifestContent);
-
+export default async function confirmManifest(
+  manifest: Manifest
+): Promise<void> {
   console.clear();
   console.log(
     table(
@@ -49,9 +41,6 @@ export default async function confirmManifest(): Promise<Manifest | void> {
   });
 
   if (!confirm) {
-    error(t("messages.operationCancelled"));
-    return;
+    throw new Error(t("messages.operationCancelled"));
   }
-
-  return manifest;
 }

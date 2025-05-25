@@ -16,7 +16,7 @@ export default async function validateFileContent(
 ): Promise<boolean> {
   const spinner = ora(t("messages.validatingZip")).start();
 
-  const allowedAndRequiredFiles = ["README.md", "LICENSE", "manifest.json"];
+  const allowedAndRequiredFiles = ["manifest.json"];
   const allowedAndRequiredFolders = ["frontend/", "backend/", "assets/"];
 
   const zipFiles = Object.keys(zipContent.files);
@@ -75,7 +75,7 @@ export default async function validateFileContent(
     const manifestFile = zipContent.file("manifest.json")!;
     const manifestContent = await manifestFile.async("string");
     const manifest = JSON.parse(manifestContent);
-    const requiredFields = ["name", "icon", "version", "description", "author"];
+    const requiredFields = ["name", "icon", "description", "author"];
 
     for (const field of requiredFields) {
       if (!manifest[field]) {

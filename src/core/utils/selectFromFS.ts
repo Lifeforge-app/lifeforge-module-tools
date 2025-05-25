@@ -1,9 +1,9 @@
 import fs from "fs";
 import path from "path";
 import prompts from "prompts";
-import { t } from "../../../core/api";
+import { t } from "../api";
 import chalk from "chalk";
-import { error, wait } from "../../../core/cli";
+import { error, wait } from "../cli";
 
 /**
  * Function to select a path (zip file or folder) from the filesystem.
@@ -11,12 +11,13 @@ import { error, wait } from "../../../core/cli";
  *
  * @param message - The message to display to the user.
  * @param type - The type of selection: "zip" for zip files or "folder" for folders.
- * @returns The selected path as a string or null if the operation was cancelled.
+ * @returns The selected path as a string
+ * @throws An error if the operation is cancelled
  */
-export default async function selectPath(
+export default async function selectFromFS(
   message: string,
   type: "zip" | "folder"
-): Promise<string | null> {
+): Promise<string> {
   console.clear();
   let currentDir = process.cwd();
 
@@ -52,7 +53,7 @@ export default async function selectPath(
 
     const options = [
       ...(currentDir !== "/" ? ["../"] : []),
-      ...(type === "folder" ? ["./ (Select this folder)"] : []),
+      ...(type === "folder" ? [`./ (${t("prompts.selectThisFolder")})`] : []),
       ...zipFilesAndFolders,
     ];
 
@@ -62,7 +63,11 @@ export default async function selectPath(
       {
         type: "autocomplete",
         name: "selectedOption",
-        message: t("prompts.fileSelectorNavigation"),
+        message: t(
+          type === "zip"
+            ? "prompts.fileSelectorNavigationZip"
+            : "prompts.fileSelectorNavigationFolder"
+        ),
         choices: options.map((option) => ({
           title: option,
           value: option,
@@ -83,9 +88,7 @@ export default async function selectPath(
     );
 
     if (cancelled) {
-      error(t("messages.operationCancelled"));
-      await wait(1000);
-      return null;
+      throw new Error(t("messages.operationCancelled"));
     }
 
     if (!selectedOption) {
@@ -97,7 +100,7 @@ export default async function selectPath(
 
     if (selectedOption === "../") {
       currentDir = path.resolve(currentDir, "..");
-    } else if (selectedOption === "./ (Select this folder)") {
+    } else if (selectedOption === `./ (${t("prompts.selectThisFolder")})`) {
       return currentDir;
     } else {
       const selectedPath = path.resolve(currentDir, selectedOption);

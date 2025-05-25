@@ -26,6 +26,11 @@ export default async function configRoutesFile(
       throw new Error(`Target category not found in ${routesFile}`);
     }
 
+    if (targetItem.items.includes(`@apps/${moduleName}`)) {
+      configRouteSpinner.warn(t("messages.moduleAlreadyExistsInCategory"));
+      return;
+    }
+
     targetItem.items.push(`@apps/${moduleName}`);
     fs.writeFileSync(
       routesFile,

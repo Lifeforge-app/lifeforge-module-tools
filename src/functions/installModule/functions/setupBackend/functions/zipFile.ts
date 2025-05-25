@@ -5,6 +5,15 @@ import path from "path";
 import ora from "ora";
 import { t } from "../../../../../core/api";
 
+/**
+ * Zips the backend files located in the specified path.
+ * The backend files are expected to be in the "unzipped/backend" directory.
+ * The zipped content is generated with high compression level.
+ * If the zipping process fails, an error is thrown with a message.
+ *
+ * @returns A promise that resolves to the zipped backend content as a Buffer.
+ * @throws An error if the zipping process fails.
+ */
 export default async function zipFile() {
   const spinner = ora(t("messages.zippingFile")).start();
 

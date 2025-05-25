@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Manifest } from "../../typescript/manifest.type";
+import type { Manifest } from "../../../../core/typescript/manifest.type";
 import zipFile from "./functions/zipFile";
 import { t } from "../../../../core/api";
 import uploadToBackend from "./functions/uploadToBackend";

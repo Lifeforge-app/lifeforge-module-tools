@@ -8,7 +8,7 @@ import { wait } from "./wait";
  *
  * @param code - The exit code to use when terminating the process. 0 indicates success, while any other number indicates an error.
  */
-export const exitProcess = async (code: number) => {
+export const exitProcess = async (code: number): Promise<never> => {
   await wait(1000);
   console.clear();
   process.exit(code);

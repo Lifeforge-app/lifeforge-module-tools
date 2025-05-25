@@ -7,6 +7,7 @@ import { error } from "../cli";
 import ora from "ora";
 import prompts from "prompts";
 import { exitProcess, wait } from "../cli";
+import promptAndStoreForFrontendPath from "../utils/promptAndStoreFrontendFolder";
 
 /**
  * Retrieves the credentials for the API connection.
@@ -14,7 +15,7 @@ import { exitProcess, wait } from "../cli";
  * If the credentials file does not exist, it prompts the user to create new credentials.
  * Session token is validated against the API before returning.
  * If the session token is invalid or expired, the process exits.
- * @returns An object containing the API host and session token if successful, otherwise exits the process.
+ * @returns An object containing the credentials and user data.
  */
 export async function getCredentials(): Promise<{
   apiHost: string;
