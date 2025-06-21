@@ -1,8 +1,21 @@
 import axios from "axios";
-import ora from "ora";
+import ora, { type Ora } from "ora";
 import fs from "fs";
 import { DATA_PATH } from "../auth/constants/constant";
 import { exitProcess, info } from "../cli";
+
+async function deleteSessionFile(spinner: Ora) {
+  spinner.fail(
+    "Session token is invalid or expired. The session file will be deleted."
+  );
+
+  // Delete the session file if it exists
+  if (fs.existsSync(DATA_PATH)) {
+    fs.rmdirSync(DATA_PATH, { recursive: true });
+    info("Session file deleted successfully.");
+  }
+  await exitProcess(1);
+}
 
 /**
  * Validates the session token against the API and retrieves user information.
@@ -30,21 +43,11 @@ export async function validateSessionTokenAndGetUserData(
 
     if (res.status === 200) {
       spinner.succeed("Session token is valid");
-      return res.data.userData;
+      return res.data.data.userData;
     } else {
-      spinner.fail(
-        "Session token is invalid or expired. The session file will be deleted."
-      );
-
-      // Delete the session file if it exists
-      if (fs.existsSync(DATA_PATH)) {
-        fs.unlinkSync(DATA_PATH);
-        info("Session file deleted successfully.");
-      }
-      await exitProcess(1);
+      await deleteSessionFile(spinner);
     }
   } catch (error) {
-    spinner.fail("An error occurred while validating the session token");
-    await exitProcess(1);
+    await deleteSessionFile(spinner);
   }
 }

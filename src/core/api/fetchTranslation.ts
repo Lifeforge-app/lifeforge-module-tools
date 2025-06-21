@@ -37,14 +37,14 @@ export async function fetchTranslation(
   const spinner = ora(`Fetching translations for "${lang}"...`).start();
   try {
     const response = await axios.get<Record<string, any>>(
-      `${apiHost}/locales/${lang}/utils.moduleTools`
+      `${apiHost}/locales/${lang}/utils/moduleTools`
     );
 
     if (response.status !== 200) {
       throw new Error("Failed to fetch translations");
     }
 
-    translations = response.data;
+    translations = response.data.data;
 
     spinner.succeed(`Fetched translations for "${lang}"`);
   } catch (error) {

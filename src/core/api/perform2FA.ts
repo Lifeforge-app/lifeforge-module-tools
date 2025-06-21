@@ -37,6 +37,8 @@ export async function perform2FA(
       type: "app",
     });
 
+    res.data = res.data.data;
+
     if (res.status === 200) {
       spinner.succeed("2FA code validated successfully");
 

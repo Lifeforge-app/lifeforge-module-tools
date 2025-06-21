@@ -16,10 +16,10 @@ await fetchTranslation(credentials.apiHost, credentials.userData.language);
 await wait(1000);
 
 // Prompt the user to select the frontend folder if not already set
-const frontendFolder = await getProps<string>("frontendPath");
+let frontendFolder = await getProps<string>("frontendPath");
 if (!frontendFolder) {
   try {
-    await promptAndStoreFrontendFolder();
+    frontendFolder = await promptAndStoreFrontendFolder();
   } catch (e) {
     error((e as Error).message);
     exitProcess(1);

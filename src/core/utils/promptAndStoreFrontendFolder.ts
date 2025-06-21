@@ -5,6 +5,7 @@ import path from "path";
 import fs from "fs";
 import { error, exitProcess, success, wait } from "../cli";
 import { pressAnyKeyToContinue } from "../cli/utils";
+import chalk from "chalk";
 
 /**
  * Prompts the user to select a frontend folder and stores the path in the props manager.
@@ -13,7 +14,7 @@ import { pressAnyKeyToContinue } from "../cli/utils";
  * Perform basic validation checks, trying to ensure that the selected folder contains
  * a valid Lifeforge frontend application.
  */
-export default async function promptAndStoreFrontendFolder() {
+export default async function promptAndStoreFrontendFolder(): Promise<string> {
   let frontendPath = "";
 
   while (true) {
@@ -69,6 +70,11 @@ export default async function promptAndStoreFrontendFolder() {
     frontendPath,
   });
 
-  success(`${t("messages.frontendFolderStoredAs")}: ${frontendPath}.`);
+  success(
+    `${t("messages.frontendFolderStoredAs")}: ${chalk.magenta(frontendPath)}.`
+  );
+
   await pressAnyKeyToContinue();
+
+  return frontendPath;
 }

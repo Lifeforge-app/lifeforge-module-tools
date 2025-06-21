@@ -26,6 +26,8 @@ export async function validateLogin(
       password,
     });
 
+    res.data = res.data.data;
+
     let status: "success" | "2fa_required" | undefined = undefined;
     let data: string | null = null;
 
